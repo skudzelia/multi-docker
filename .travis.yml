@@ -1,22 +1,24 @@
 sudo: required
+language: generic
+
 services:
   - docker
 
 before_install:
-  - docker build -t skudzelia/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t stephengrider/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run skudzelia/react-test npm test -- --coverage
+  - docker run -e CI=true stephengrider/react-test npm test
 
 after_success:
-  - docker build -t skudzelia/multi-client ./client
-  - docker build -t skudzelia/multi-nginx ./nginx
-  - docker build -t skudzelia/multi-server ./server
-  - docker build -t skudzelia/multi-worker ./worker
-  #Log in to docker hub
+  - docker build -t stephengrider/multi-client ./client
+  - docker build -t stephengrider/multi-nginx ./nginx
+  - docker build -t stephengrider/multi-server ./server
+  - docker build -t stephengrider/multi-worker ./worker
+  # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  #Push
-  - docker push skudzelia/multi-client
-  - docker push skudzelia/multi-nginx
-  - docker push skudzelia/multi-server
-  - docker push skudzelia/multi-worker
+  # Take those images and push them to docker hub
+  - docker push stephengrider/multi-client
+  - docker push stephengrider/multi-nginx
+  - docker push stephengrider/multi-server
+  - docker push stephengrider/multi-worker
